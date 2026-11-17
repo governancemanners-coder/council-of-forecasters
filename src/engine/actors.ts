@@ -1,0 +1,548 @@
+import type { Actor, ActorId } from './types';
+
+/**
+ * The twelve seats of the Council of Forecasters.
+ * Canonical data — transcribed verbatim from design/council.md §4.
+ * Axis order: [AFF, AUT, FND, INT, DEM, NME, RGT, CLM], range −3..+3.
+ */
+
+export const ACTORS: Actor[] = [
+  {
+    id: 'board',
+    seat: 1,
+    name: "Your Co-op's Board of Directors",
+    shortName: "Co-op's Board",
+    monogram: 'BO',
+    orgType: 'governance',
+    orgLabel: 'GOVERNANCE',
+    persona: 'Fiduciary first, motion second.',
+    bio: 'Duty-bound under the Co-operative Corporations Act; cautious, governance-first, allergic to unminuted risk.',
+    weights: [2, 2, 1, 0, 2, 1, 1, 1],
+    salience: 0.9,
+    influence: 0.6,
+    lambda: 0.4,
+    hardConstraints: [
+      'Co-operative Corporations Act (fiduciary duty, special resolutions)',
+      'Co-op bylaws & occupancy bylaw',
+    ],
+    policyOptions: [
+      'approve with conditions',
+      'refer to committee',
+      'commission legal/financial review',
+      "call special members' meeting",
+      'defer',
+    ],
+    voice: {
+      support: [
+        "The numbers hold and the bylaws allow it. Let's minute this properly and move.",
+        "This protects the co-op's long-term interests — that is literally our job.",
+        "I'm prepared to recommend this to the membership with the conditions we've discussed.",
+      ],
+      oppose: [
+        "We have a fiduciary duty here, and this motion as written doesn't meet it.",
+        "No board survives approving this without a legal opinion. I won't sign.",
+        "The risk lands on the members, and the members didn't ask for it.",
+      ],
+      cautious: [
+        'Before we sign anything, I want the fiduciary analysis on the table. What do we risk, and who bears it?',
+        "There's a version of this I could support. This isn't it yet.",
+        "Let's refer this to committee and see what counsel says.",
+      ],
+    },
+    qa: {
+      support: 'A clean legal opinion, a member consultation plan, and a fallback if costs overrun.',
+      limit: 'Anything that breaches the Act or puts member housing charges at unmanaged risk.',
+    },
+  },
+  {
+    id: 'assembly',
+    seat: 2,
+    name: "The Members' Assembly",
+    shortName: "Members' Assembly",
+    monogram: 'MA',
+    orgType: 'governance',
+    orgLabel: 'GOVERNANCE',
+    persona: 'One member, one vote — and we read the notice twice.',
+    bio: 'The general membership; protective of housing charges, wary of risk, sovereign at a properly called meeting.',
+    weights: [2, 2, 0, -2, 3, 0, 2, 0],
+    salience: 1.0,
+    influence: 0.7,
+    lambda: 0.6,
+    hardConstraints: [
+      'Special-resolution thresholds under the Co-operative Corporations Act',
+      'Meeting notice requirements',
+    ],
+    policyOptions: ['ratify', 'amend', 'reject', 'demand town hall', 'petition special meeting'],
+    voice: {
+      support: [
+        "Our charges stay stable and our say gets stronger? That's an easy yes.",
+        'This is why we joined a co-op — members deciding, members benefiting.',
+        "I'll move it at the meeting myself.",
+      ],
+      oppose: [
+        "You're raising our charges for a plan we never asked for. Vote it down.",
+        'Nobody consulted this room. This room decides.',
+        "My neighbour was renovicted out of a 'partnership' like this. No.",
+      ],
+      cautious: [
+        'How much is this going to cost my household, in dollars, per month?',
+        'We want a town hall before any vote — and plain-language documents.',
+        'Show me what the members get, not what the consultants get.',
+      ],
+    },
+    qa: {
+      support: 'Charge stability, a real vote with real notice, and visible member benefit.',
+      limit: 'Any charge increase without member approval, or a deal struck behind closed doors.',
+    },
+  },
+  {
+    id: 'chft',
+    seat: 3,
+    name: 'Co-operative Housing Federation of Toronto',
+    shortName: 'CHFT',
+    monogram: 'CF',
+    orgType: 'sector',
+    orgLabel: 'SECTOR',
+    persona: "The sector's memory and its megaphone.",
+    bio: 'Champions co-op autonomy and expansion; runs shared services; brokers between member co-ops and government.',
+    weights: [2, 3, 1, 1, 2, 3, 1, 2],
+    salience: 0.8,
+    influence: 0.7,
+    lambda: 0.5,
+    hardConstraints: [
+      'None statutory; reputational — will not back anything that undermines co-op autonomy sector-wide',
+    ],
+    policyOptions: [
+      'endorse publicly',
+      'provide shared services (financing pool, energy retrofits)',
+      'convene peer co-ops',
+      'withhold endorsement',
+    ],
+    voice: {
+      support: [
+        "This is exactly the kind of member-driven move the sector needs more of. We'll amplify it.",
+        'Our shared-services pool can de-risk this for you — financing, procurement, the works.',
+        'Strong co-ops doing this well makes the case for every other co-op in Toronto.',
+      ],
+      oppose: [
+        "If this sets a precedent of co-ops trading away autonomy, we can't stand with it.",
+        "We've seen this film. It ends with a consultant owning your minutes book.",
+        "The federation's endorsement is earned, and this hasn't earned it.",
+      ],
+      cautious: [
+        "There's a good co-op move inside this if the governance stays with members.",
+        "Let us bring two peer co-ops who've done this to your next meeting.",
+        "We'll watch how CHF Canada reads the funding side before we commit.",
+      ],
+    },
+    qa: {
+      support: 'Member control preserved in writing, and a shareable model other co-ops can reuse.',
+      limit: 'Anything that weakens sector-wide co-op autonomy or member democracy.',
+    },
+  },
+  {
+    id: 'chf',
+    seat: 4,
+    name: 'CHF Canada',
+    shortName: 'CHF Canada',
+    monogram: 'CC',
+    orgType: 'sector',
+    orgLabel: 'SECTOR',
+    persona: "Ottawa's number on our desk, your file on theirs.",
+    bio: 'National federation; lives inside federal funding programs and fights for rent-geared-to-income (RGI) continuity.',
+    weights: [3, 2, 3, 1, 1, 3, 2, 1],
+    salience: 0.7,
+    influence: 0.6,
+    lambda: 0.5,
+    hardConstraints: ['Program eligibility rules of federal programs it brokers'],
+    policyOptions: [
+      'broker federal program applications',
+      'issue sector analysis',
+      'coordinate with CMHC',
+      'publish cautionary brief',
+    ],
+    voice: {
+      support: [
+        "There's a federal program with your name on it. Let's get the application in before the window closes.",
+        'Affordable, member-run, expanding — this is what the National Housing Strategy is for.',
+        "We'll flag your file to the program officers we work with.",
+      ],
+      oppose: [
+        "This takes affordable units out of the count. We'll say so publicly.",
+        "No federal program will touch this structure, and we won't pretend otherwise.",
+        "You're trading RGI households for balance-sheet optics. We oppose.",
+      ],
+      cautious: [
+        'The eligibility math is tight. Send us your numbers before you announce anything.',
+        'We can see a path, but it runs through a program application, not around it.',
+        "We're aligned with CHFT on this — talk to them first.",
+      ],
+    },
+    qa: {
+      support: 'A credible federal program application and protection of every RGI household.',
+      limit: 'Net loss of subsidized units or anything ineligible for the programs we broker.',
+    },
+  },
+  {
+    id: 'city',
+    seat: 5,
+    name: 'City of Toronto — Housing Secretariat / SSHA',
+    shortName: 'Housing Secretariat',
+    monogram: 'CT',
+    orgType: 'government',
+    orgLabel: 'GOVERNMENT',
+    persona: 'HousingTO targets on the wall, accountability forms in the drawer.',
+    bio: 'Municipal housing administration; wants non-market growth, demands reporting and outcomes.',
+    weights: [2, -1, 2, 2, 0, 3, 1, 2],
+    salience: 0.8,
+    influence: 0.8,
+    lambda: 0.5,
+    hardConstraints: [
+      'HousingTO 2020–2030 accountability framework',
+      'Municipal funding agreements',
+      'Open Doors / Housing Now program terms where applicable',
+    ],
+    policyOptions: [
+      'fast-track approvals support',
+      'convene interdivisional table',
+      'offer incentives (fee relief, land)',
+      'require accountability agreement',
+    ],
+    voice: {
+      support: [
+        'Non-market units, climate upgrades, member governance — this checks three HousingTO boxes at once.',
+        'If you bring us a solid accountability framework, we can move quickly on our side.',
+        'This is the kind of project we point to at Council.',
+      ],
+      oppose: [
+        "We can't attach the City's name to a net loss of affordable homes. Full stop.",
+        "This reads as deregulation of a public asset. We won't support it.",
+        'No accountability, no partnership.',
+      ],
+      cautious: [
+        'We like the intent. We need the reporting framework before we can endorse.',
+        "Our housing targets and your co-op's stability aren't in conflict here — but the details decide.",
+        "Bring us a proposal with milestones and we'll bring the right divisions to the table.",
+      ],
+    },
+    qa: {
+      support: 'A measurable contribution to HousingTO targets plus a signed accountability agreement.',
+      limit: 'Net loss of non-market units or refusal of reporting obligations.',
+    },
+  },
+  {
+    id: 'ward',
+    seat: 6,
+    name: 'The Ward Councillor / Planning & Housing Committee',
+    shortName: 'Ward Councillor',
+    monogram: 'WC',
+    orgType: 'government',
+    orgLabel: 'GOVERNMENT',
+    persona: 'Two phones: one rings NIMBY, one rings housing crisis.',
+    bio: 'Local political gatekeeper; tracks public opinion; can bless or bury a project at committee. The most persuadable seat — tracks the Members’ Assembly and Advocacy closely.',
+    weights: [0, 0, 1, -1, 1, 1, 1, 1],
+    salience: 0.6,
+    influence: 0.7,
+    lambda: 0.8,
+    hardConstraints: ['None statutory; political survival — will not front-run visible ward opposition'],
+    policyOptions: ['champion at committee', 'stay neutral', 'request community consultation', 'quietly block'],
+    voice: {
+      support: [
+        "Affordable homes in the ward with the community behind them? I'll carry that to committee myself.",
+        "My office has heard more support than opposition on this — let's move.",
+        "This lets me say yes to housing without a fight. I'll take it.",
+      ],
+      oppose: [
+        "My inbox is on fire. I can't carry this.",
+        "Until the members themselves are onside, I'm a no.",
+        "I didn't get elected to approve deals nobody in the ward understands.",
+      ],
+      cautious: [
+        'Brief me before the members’ meeting, not after. I hate surprises.',
+        'If the room supports it, I support it. If the room splits, I wait.',
+        'Get the advocates and the members in the same room, then call me.',
+      ],
+    },
+    qa: {
+      support: 'Visible member support and a quiet room — brief me early and bring the advocates along.',
+      limit: 'Front-running organized ward opposition.',
+    },
+  },
+  {
+    id: 'mmah',
+    seat: 7,
+    name: 'Ontario Ministry of Municipal Affairs & Housing',
+    shortName: 'Ontario MMAH',
+    monogram: 'ON',
+    orgType: 'government',
+    orgLabel: 'GOVERNMENT',
+    persona: 'The Act is the floor, not the ceiling — and we watch the floor.',
+    bio: 'Provincial regulator of co-ops under the Co-operative Corporations Act; approves, withholds, investigates.',
+    weights: [0, -3, 0, 0, 0, 0, 1, 0],
+    salience: 0.7,
+    influence: 0.9,
+    lambda: 0.3,
+    hardConstraints: [
+      'Co-operative Corporations Act (provincial administration)',
+      'Ministerial approval requirements for certain dispositions',
+    ],
+    policyOptions: ['approve', 'approve with conditions', 'require remediation plan', 'refer for inspection/investigation'],
+    voice: {
+      support: [
+        'The filings are in order and the process was followed. The Ministry has no objection.',
+        'Proper notice, proper vote, proper records — this is how co-ops should do it.',
+        'Compliance achieved. Proceed.',
+      ],
+      oppose: [
+        'This disposition requires ministerial oversight it hasn’t sought. It will not proceed as filed.',
+        'We have opened files for less. Bring this into compliance.',
+        'The Ministry does not negotiate the Act.',
+      ],
+      cautious: [
+        'Our concern is procedural, not substantive. Cure the process and the substance may pass.',
+        'We will want to see the special resolution and the meeting minutes before any approval.',
+        'Conditional on documentation.',
+      ],
+    },
+    qa: {
+      support: 'Documented procedural compliance — notice, quorum, resolution, minutes.',
+      limit: 'Any action the Co-operative Corporations Act reserves for ministerial or member approval, done without it.',
+    },
+  },
+  {
+    id: 'cmhc',
+    seat: 8,
+    name: 'CMHC',
+    shortName: 'CMHC',
+    monogram: 'CM',
+    orgType: 'funder',
+    orgLabel: 'FUNDER',
+    persona: 'Program criteria first, enthusiasm second.',
+    bio: 'Federal housing agency; gatekeeps National Housing Strategy money — seed funding, the Co-operative Housing Development Program, renovation/retrofit streams.',
+    weights: [2, -1, 3, 1, 0, 2, 1, 2],
+    salience: 0.7,
+    influence: 0.9,
+    lambda: 0.3,
+    hardConstraints: ['National Housing Strategy program criteria', 'Lending underwriting standards'],
+    policyOptions: [
+      'approve seed/contribution funding',
+      'approve insured financing',
+      'request revised pro forma',
+      'decline',
+    ],
+    voice: {
+      support: [
+        'With a seed-funding application attached, this starts to look financeable. Program criteria first, density second.',
+        'Affordable, energy-efficient, member-governed — you are describing our scorecard.',
+        "The pro forma works. We're prepared to move to underwriting.",
+      ],
+      oppose: [
+        "This doesn't meet program criteria, and criteria are not a starting position.",
+        "The covenant math doesn't hold. Declined — but the door stays open for a revised file.",
+        'We fund affordability, not asset plays.',
+      ],
+      cautious: [
+        "Interesting, but the application does the talking. Submit and we'll score it.",
+        "Pair this with a retrofit stream and the numbers may clear. As filed, they don't.",
+        'We need three years of audited statements and an affordability covenant before anything moves.',
+      ],
+    },
+    qa: {
+      support: 'A complete application under the right program stream with a binding affordability covenant.',
+      limit: 'Anything outside program criteria or below underwriting standards.',
+    },
+  },
+  {
+    id: 'counsel',
+    seat: 9,
+    name: 'Sector Legal Counsel',
+    shortName: 'Legal Counsel',
+    monogram: 'LC',
+    orgType: 'legal',
+    orgLabel: 'LEGAL — VETO CHAIR',
+    persona: "I don't have opinions. I have citations.",
+    bio: 'Interprets the Co-operative Corporations Act, RTA carve-outs, the Human Rights Code, and fiduciary duty. Immune to cascade (λ = 0); can hard-block illegal options.',
+    weights: [0, 0, 0, 0, 0, 0, 2, 0],
+    salience: 1.0,
+    influence: 1.0,
+    lambda: 0.0,
+    hardConstraints: [
+      'Co-operative Corporations Act',
+      'Residential Tenancies Act (co-op carve-outs)',
+      'Ontario Human Rights Code',
+      'Fiduciary duty',
+    ],
+    policyOptions: ['issue opinion', 'hard-block (veto)', 'draft compliant alternative', 'require member vote'],
+    voice: {
+      support: [
+        'On the facts given, this is lawful. Paper it correctly and proceed.',
+        'Compliant as drafted. My opinion letter will say so.',
+        'No statutory barrier. The rest is politics, which is your department.',
+      ],
+      oppose: [
+        'HARD CONSTRAINT — Co-operative Corporations Act: this requires a members’ special resolution. Skipping it caps this forecast at Blocked.',
+        'HARD CONSTRAINT — Residential Tenancies Act: co-op eviction matters run through the LTB. This shortcut is unlawful.',
+        'HARD CONSTRAINT — Ontario Human Rights Code: this occupancy rule has a differential impact. Redraft or abandon.',
+      ],
+      cautious: [
+        'Lawful in principle, fragile in drafting. Let me see the bylaw language before you circulate it.',
+        'There is a compliant path here, and it runs through a member vote.',
+        'I can get you to yes, but not by this route.',
+      ],
+    },
+    qa: {
+      support: 'Bring it inside the Act: proper notice, proper vote, proper drafting. Then my answer is yes by definition.',
+      limit: "Statute. I don't bend; the drafting does.",
+    },
+    isVetoChair: true,
+  },
+  {
+    id: 'advocacy',
+    seat: 10,
+    name: 'Tenant & Housing Advocacy (ACORN-style)',
+    shortName: 'Tenant Advocacy',
+    monogram: 'TA',
+    orgType: 'advocacy',
+    orgLabel: 'ADVOCACY',
+    persona: 'We bring the room.',
+    bio: "Fights displacement, renovictions, and affordability erosion; mobilizes members and press; amplifies Legal Counsel's vetoes.",
+    weights: [3, 1, 2, -2, 2, 2, 3, 1],
+    salience: 0.9,
+    influence: 0.6,
+    lambda: 0.6,
+    hardConstraints: ['None statutory; mission — will never trade away affordability or member rights'],
+    policyOptions: ['mobilize members', 'media campaign', 'petition', 'negotiate community-benefit terms', 'endorse'],
+    voice: {
+      support: [
+        "Real affordability, locked in, with members in charge? We'll knock on doors for that.",
+        'This is what housing justice looks like at the neighbourhood scale.',
+        "We'll stand at your press conference — and mean it.",
+      ],
+      oppose: [
+        "We hear 'partnership' and we reach for the rent ledger. Show us the affordability covenant or expect a packed members' meeting.",
+        "Displacement by another name is still displacement. We'll fight this.",
+        'Every member of this co-op will know what this board tried to do by Friday.',
+      ],
+      cautious: [
+        'The affordability covenant is the whole ballgame. Where is it?',
+        "We'll hold our fire until the town hall. Make it count.",
+        "Counsel's objection is our objection, louder.",
+      ],
+    },
+    qa: {
+      support: 'A binding, enforceable affordability and no-displacement covenant — in writing, in public.',
+      limit: 'Any loss of affordable homes or member rights, ever.',
+    },
+  },
+  {
+    id: 'developer',
+    seat: 11,
+    name: 'Private Development Partner',
+    shortName: 'Development Partner',
+    monogram: 'PD',
+    orgType: 'market',
+    orgLabel: 'MARKET',
+    persona: 'Capital is patient; control is priceless.',
+    bio: 'Market developer eyeing intensification and air-rights partnerships; brings money, wants density and say.',
+    weights: [-2, -1, -3, 3, -2, -2, -1, 1],
+    salience: 0.6,
+    influence: 0.7,
+    lambda: 0.4,
+    hardConstraints: ['None statutory; capital discipline — walks when return or control drops below threshold'],
+    policyOptions: ['offer air-rights/intensification deal', 'offer capital partnership', 'renegotiate terms', 'walk away'],
+    voice: {
+      support: [
+        'Now this is a conversation. Density on the table, capital on the way.',
+        'We can close in ninety days if the governance clause goes our way.',
+        'Finally, a board that thinks like owners.',
+      ],
+      oppose: [
+        "No density, no deal. We're not a charity.",
+        "You want our capital without our conditions. That's not how capital works.",
+        "We'll wait for the next board.",
+      ],
+      cautious: [
+        "The site works. The terms don't — yet.",
+        'Give us air rights and a long lease and we can be flexible on the rest.',
+        'Our pro forma needs twenty more units to clear. Talk to us.',
+      ],
+    },
+    qa: {
+      support: 'Density, air rights, and a governance or lease position that protects our capital.',
+      limit: 'Below-market return with above-market restrictions. One or the other.',
+    },
+  },
+  {
+    id: 'nhc',
+    seat: 12,
+    name: 'National Housing Council / Right-to-Housing Lens',
+    shortName: 'National Housing Council',
+    monogram: 'NH',
+    orgType: 'rights',
+    orgLabel: 'RIGHTS',
+    persona: 'The moral record-keeper.',
+    bio: 'Reviews actions against the National Housing Strategy Act and the UN right to adequate housing (CESCR Art. 11; Special Rapporteur guidance). Moral-legal weight; names and shames.',
+    weights: [3, 0, 1, -1, 1, 3, 3, 1],
+    salience: 0.6,
+    influence: 0.5,
+    lambda: 0.4,
+    hardConstraints: [
+      'National Housing Strategy Act right-to-housing framework',
+      'UN CESCR Art. 11 principles (no forced eviction, no net loss without alternatives)',
+    ],
+    policyOptions: [
+      'issue supportive finding',
+      'issue concern letter',
+      'refer to Federal Housing Advocate',
+      'public statement',
+    ],
+    voice: {
+      support: [
+        'This advances the right to adequate housing — more affordable homes, members empowered, no one displaced.',
+        "A model other jurisdictions should study. We'll say so.",
+        'Rights-compliant and rights-advancing. Rare, and worth celebrating.',
+      ],
+      oppose: [
+        'A net loss of affordable homes is a retrogressive measure under international law. We will name it as such.',
+        'Displacement without adequate alternatives violates the right to housing. Full stop.',
+        'We will refer this file to the Federal Housing Advocate.',
+      ],
+      cautious: [
+        'The intent may be sound; the rights impact assessment is missing. Do one.',
+        'We reserve judgment until the displacement analysis is public.',
+        'Compliance with the letter of the law is not the same as honouring the right to housing.',
+      ],
+    },
+    qa: {
+      support: 'A published rights-impact assessment showing no net loss and no forced displacement.',
+      limit: 'Retrogression: fewer affordable homes, weaker security of tenure, or displacement without alternatives.',
+    },
+  },
+];
+
+export const ACTOR_BY_ID: Record<ActorId, Actor> = Object.fromEntries(
+  ACTORS.map((a) => [a.id, a]),
+) as Record<ActorId, Actor>;
+
+export const ACTOR_INDEX: Record<ActorId, number> = Object.fromEntries(
+  ACTORS.map((a, i) => [a.id, i]),
+) as Record<ActorId, number>;
+
+/** The five gatekeeper seats that set the probability band. */
+export const GATEKEEPERS: ActorId[] = ['board', 'assembly', 'city', 'mmah', 'cmhc'];
+
+/** Bloc color used for PersonaAvatar accent bars, keyed by actor id. */
+export const BLOC_COLORS: Record<ActorId, string> = {
+  board: '#0F766E',
+  assembly: '#0F766E',
+  chft: '#15803D',
+  chf: '#15803D',
+  city: '#B45309',
+  ward: '#B45309',
+  mmah: '#C2410C',
+  cmhc: '#15803D',
+  counsel: '#B91C1C',
+  advocacy: '#C2410C',
+  developer: '#6B7280',
+  nhc: '#2563EB',
+};

@@ -1,0 +1,143 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 60 14% 97%;
+    --foreground: 210 10% 11%;
+    --card: 0 0% 100%;
+    --card-foreground: 210 10% 11%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 210 10% 11%;
+    --primary: 174 79% 26%;
+    --primary-foreground: 0 0% 98%;
+    --secondary: 48 14% 93%;
+    --secondary-foreground: 210 10% 11%;
+    --muted: 48 14% 93%;
+    --muted-foreground: 220 9% 46%;
+    --accent: 174 79% 26%;
+    --accent-foreground: 0 0% 98%;
+    --destructive: 0 72% 42%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 45 10% 89%;
+    --input: 45 10% 89%;
+    --ring: 174 79% 26%;
+    --radius: 0.625rem;
+    --sidebar-background: 60 14% 97%;
+    --sidebar-foreground: 210 8% 27%;
+    --sidebar-primary: 174 79% 26%;
+    --sidebar-primary-foreground: 0 0% 98%;
+    --sidebar-accent: 48 14% 93%;
+    --sidebar-accent-foreground: 210 10% 11%;
+    --sidebar-border: 45 10% 89%;
+    --sidebar-ring: 174 79% 26%;
+  }
+
+  .dark {
+    --background: 210 10% 11%;
+    --foreground: 60 14% 97%;
+    --card: 210 10% 11%;
+    --card-foreground: 60 14% 97%;
+    --popover: 210 10% 11%;
+    --popover-foreground: 60 14% 97%;
+    --primary: 60 14% 97%;
+    --primary-foreground: 210 10% 11%;
+    --secondary: 210 4% 16%;
+    --secondary-foreground: 60 14% 97%;
+    --muted: 210 4% 16%;
+    --muted-foreground: 220 9% 64%;
+    --accent: 210 4% 16%;
+    --accent-foreground: 60 14% 97%;
+    --destructive: 0 62% 30%;
+    --destructive-foreground: 60 14% 97%;
+    --border: 210 4% 16%;
+    --input: 210 4% 16%;
+    --ring: 220 9% 84%;
+    --sidebar-background: 210 10% 11%;
+    --sidebar-foreground: 60 14% 97%;
+    --sidebar-primary: 60 14% 97%;
+    --sidebar-primary-foreground: 210 10% 11%;
+    --sidebar-accent: 210 4% 16%;
+    --sidebar-accent-foreground: 60 14% 97%;
+    --sidebar-border: 210 4% 16%;
+    --sidebar-ring: 220 9% 84%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  html {
+    scroll-behavior: smooth;
+  }
+  body {
+    @apply bg-paper text-ink font-sans antialiased;
+  }
+  ::selection {
+    background: #0f766e;
+    color: #faf9f6;
+  }
+}
+
+@layer components {
+  /* mono label: IBM Plex Mono 12px, 500, +0.08em, uppercase */
+  .mono-label {
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-size: 12px;
+    line-height: 16px;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+  /* mono data: IBM Plex Mono 14px, 400 */
+  .mono-data {
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-size: 14px;
+    line-height: 20px;
+    font-weight: 400;
+  }
+}
+
+@keyframes marquee-left {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+
+@keyframes marquee-right {
+  from { transform: translateX(-50%); }
+  to { transform: translateX(0); }
+}
+
+@keyframes scroll-cue {
+  0% { transform: scaleY(0); transform-origin: top; opacity: 0; }
+  35% { opacity: 1; }
+  100% { transform: scaleY(1); transform-origin: top; opacity: 0; }
+}
+
+@keyframes ring-pulse {
+  0%, 100% { opacity: 0.35; }
+  12% { opacity: 1; }
+}
+
+@layer utilities {
+  .marquee-track {
+    animation: marquee-left 40s linear infinite;
+  }
+  .marquee-track-reverse {
+    animation: marquee-right 32s linear infinite;
+  }
+  .marquee-pause:hover .marquee-track,
+  .marquee-pause:hover .marquee-track-reverse {
+    animation-play-state: paused;
+  }
+  .scroll-cue-line {
+    animation: scroll-cue 1.6s ease-in-out infinite;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .marquee-track, .marquee-track-reverse, .scroll-cue-line {
+      animation: none;
+    }
+  }
+}

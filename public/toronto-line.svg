@@ -1,0 +1,61 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2000 600" width="2000" height="600" fill="none" role="img" aria-label="Toronto skyline, continuous line">
+  <!-- Single-weight (2px) continuous line: CN Tower, City Hall curved towers, low-rise co-op block -->
+  <g stroke="#3F444A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <path d="
+      M 40 520
+      L 240 520
+      L 240 470 L 300 470 L 300 520
+      L 430 520
+      L 430 430 L 470 400 L 510 430 L 510 520
+      L 620 520
+      L 620 450 L 660 450 L 660 415 L 700 415 L 700 520
+      L 820 520
+      L 820 240
+      Q 822 200 826 180
+      L 830 168
+      L 836 168 L 836 240
+      Q 838 260 842 268
+      L 856 268
+      Q 862 240 862 200
+      L 866 120 L 872 120 L 872 92
+      L 876 92 L 876 60 L 882 60 L 882 92
+      L 888 92 L 888 120 L 894 120
+      L 898 200
+      Q 898 240 904 268
+      L 918 268
+      Q 922 260 924 240
+      L 924 168 L 930 168
+      Q 934 200 938 240
+      L 938 520
+      L 1060 520
+      C 1060 420 1062 340 1080 300
+      C 1098 260 1120 250 1136 250
+      C 1152 250 1158 270 1158 300
+      L 1158 520
+      L 1210 520
+      C 1210 400 1214 320 1240 280
+      C 1262 248 1290 240 1308 240
+      C 1326 240 1334 262 1334 300
+      L 1334 520
+      L 1450 520
+      L 1450 480 L 1490 480 L 1490 520
+      L 1620 520
+      L 1620 460 L 1660 430 L 1700 460 L 1700 520
+      L 1740 520
+      L 1740 455 L 1785 422 L 1830 455 L 1830 520
+      L 1870 520
+      L 1870 468 L 1905 440 L 1940 468 L 1940 520
+      L 1960 520
+    "/>
+    <!-- CN Tower pod ring -->
+    <path d="M 852 150 Q 880 138 908 150"/>
+    <!-- ground hairline -->
+    <path d="M 20 520 L 1980 520" stroke="#D4D2CB"/>
+    <!-- windows on the co-op block -->
+    <g stroke="#6B7280" stroke-width="1.4">
+      <path d="M 640 470 h 14 M 640 492 h 14 M 676 448 h 14 M 676 470 h 14 M 676 492 h 14"/>
+      <path d="M 448 455 h 12 M 448 480 h 12 M 480 455 h 12 M 480 480 h 12"/>
+      <path d="M 1640 480 h 12 M 1668 470 h 12 M 1668 495 h 12 M 1758 470 h 12 M 1758 495 h 12 M 1796 470 h 12"/>
+    </g>
+  </g>
+</svg>
