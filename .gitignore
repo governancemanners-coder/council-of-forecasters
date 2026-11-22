@@ -9,7 +9,7 @@ dist
 *.db
 *.sqlite
 *.sqlite3
-db/migrations/*.sql
+.data/
 # TypeScript cache
 *.tsbuildinfo
 # Build outputs
@@ -20,3 +20,19 @@ coverage/
 .nyc_output/
 # Logs
 *.log
+# Playwright MCP artifacts
+.playwright-mcp/
+
+# Security scan artifacts
+*-report.json
+*-stderr.txt
+npm-audit.json
+scan-summary.json
+
+
+# Security scan artifacts
+*-report.json
+*-stderr.txt
+npm-audit.json
+scan-summary.json
+precommit-scan-*.md

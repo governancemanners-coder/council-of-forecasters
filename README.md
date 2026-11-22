@@ -1,73 +1,45 @@
-# React + TypeScript + Vite
+# Council of Forecasters
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A 12-seat deliberation simulator for Toronto housing co-operative governance. You seed a proposed action; the Council caucuses across four rounds and the Report Agent dockets a probability-banded forecast.
 
-Currently, two official plugins are available:
+## Quick start
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
-
-## React Compiler
-
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+cp .env.example .env
+npm install
+npm run dev
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+Open [http://localhost:3000](http://localhost:3000). The simulator works out of the box on the **deterministic engine** — no database or LLM key required.
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+## Optional upgrades
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+| Variable | Effect |
+|---|---|
+| `LLM_API_KEY` | Live per-seat deliberation + ReportAgent synthesis via an OpenAI-compatible API (default OpenRouter). Falls back per-layer if rate-limited. |
+| `DATABASE_URL` | MySQL / PlanetScale docket. When unset, runs persist to `.data/simulation-runs.json`. |
+| `APP_ID` / `APP_SECRET` | Required only in production (`NODE_ENV=production`). |
+
+```bash
+# With MySQL configured:
+npm run db:push   # or apply db/migrations/0000_simulation_runs.sql
 ```
+
+## Scripts
+
+| Script | Purpose |
+|---|---|
+| `npm run dev` | Vite + Hono API on port 3000 |
+| `npm run build` | Client + server bundle → `dist/` |
+| `npm start` | Serve production build |
+| `npm run check` | TypeScript project build |
+| `npm test` | Vitest (engine + API) |
+| `npm run lint` | ESLint |
+
+## Architecture
+
+- **`src/engine`** — deterministic preference-map math (stances, cascade, vetoes, bands)
+- **`api/services/deliberation.ts`** — optional LLM overlay on top of the engine
+- **`api/queries/runs.ts`** — MySQL or local JSON docket
+- **`src/pages/Simulator`** — seed → caucus reveal → stance board
+- **`src/pages/Report`** — forecast docket (localStorage + server restore)

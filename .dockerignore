@@ -1,5 +1,14 @@
 node_modules
 dist
 .git
+.env
+.env.*
 *.swp
 *.log
+*.map
+.data
+.playwright-mcp
+coverage
+*.db
+*.sqlite
+*.sqlite3
