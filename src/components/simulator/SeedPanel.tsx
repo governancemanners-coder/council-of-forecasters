@@ -24,12 +24,14 @@ export const DEFAULT_SLIDERS: Sliders = { financial: 50, member: 50, regulatory:
 
 export const EMPTY_DRAFT: SeedDraft = { text: '', categoryId: null, sliders: DEFAULT_SLIDERS };
 
-/** Valid seed = category picked + ≥10 chars of text. */
-export function isDraftValid(d: SeedDraft): boolean {
-  return d.categoryId !== null && d.text.trim().length >= 10;
-}
+/** Hard cap — must match `api/router.ts` seedSchema. */
+export const SEED_MAX = 280;
 
-const SOFT_CAP = 280;
+/** Valid seed = category picked + 10–280 chars of text (matches API Zod). */
+export function isDraftValid(d: SeedDraft): boolean {
+  const len = d.text.trim().length;
+  return d.categoryId !== null && len >= 10 && len <= SEED_MAX;
+}
 
 const SLIDER_DEFS: Array<{
   key: keyof Sliders;
@@ -166,18 +168,19 @@ export default function SeedPanel({
             <span
               className={cn(
                 'mono-label text-[10px] tabular-nums',
-                draft.text.length > SOFT_CAP ? 'text-persuade' : 'text-gray-500',
+                draft.text.length >= SEED_MAX ? 'text-persuade' : 'text-gray-500',
               )}
             >
-              {draft.text.length}/{SOFT_CAP}
+              {draft.text.length}/{SEED_MAX}
             </span>
           </div>
           <Textarea
             id="seed-text"
             rows={5}
             disabled={locked}
+            maxLength={SEED_MAX}
             value={draft.text}
-            onChange={(e) => set({ text: e.target.value })}
+            onChange={(e) => set({ text: e.target.value.slice(0, SEED_MAX) })}
             placeholder="e.g., Partner with a developer to build a 6-storey rental addition on our parking lot, proceeds fund retrofits…"
             className="resize-none bg-paper text-[15px] leading-6 placeholder:text-gray-400"
           />

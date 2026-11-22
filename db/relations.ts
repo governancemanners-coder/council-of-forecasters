@@ -1,1 +1,2 @@
-import {} from "./schema";
+/** No cross-table relations yet — simulation_runs stands alone. */
+export {};

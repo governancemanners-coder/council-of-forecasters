@@ -4,8 +4,8 @@ import { cn } from '@/lib/utils';
 
 /**
  * Run-provenance chip. Teal wash when the record came from live server-side
- * LLM deliberation; quiet gray when the deterministic engine carried the run
- * (LLM upstream busy or unreachable). Renders nothing until meta resolves.
+ * LLM deliberation; quiet gray when the deterministic engine carried the run.
+ * Distinguishes offline (server unreachable) from configured-but-busy LLM.
  */
 export default function EngineChip({
   meta,
@@ -26,9 +26,12 @@ export default function EngineChip({
       </StatusChip>
     );
   }
+  const reason = meta.offline
+    ? 'server unreachable — local deterministic engine'
+    : 'deterministic engine (no LLM key or upstream busy)';
   return (
     <StatusChip variant="neutral" className={cn('text-[10px]', className)}>
-      OFFLINE MODEL — deterministic engine (LLM upstream busy)
+      OFFLINE MODEL — {reason}
     </StatusChip>
   );
 }
